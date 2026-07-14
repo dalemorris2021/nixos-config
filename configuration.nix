@@ -114,69 +114,91 @@ in
       extraConfig = ''
         local wezterm = require('wezterm')
 
-	local config = {}
+	    local config = {}
 
-	config.color_scheme = 'Tokyo Night'
-	config.font = wezterm.font('Fira Code')
-	config.window_background_opacity = 0.5
+	    config.color_scheme = 'Tokyo Night'
+	    config.font = wezterm.font('Fira Code')
+	    config.window_background_opacity = 0.5
 
         config.keys = {
           {
-	    key = "'",
-	    mods = 'CTRL',
-	    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-	  },
+	        key = "'",
+	        mods = 'CTRL',
+	        action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+	      },
           {
-	    key = '"',
-	    mods = 'CTRL|SHIFT',
-	    action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-	  },
-	  {
-	    key = 'LeftArrow',
-	    mods = 'CTRL',
-	    action = wezterm.action.ActivatePaneDirection 'Left',
-	  },
-	  {
-	    key = 'RightArrow',
-	    mods = 'CTRL',
-	    action = wezterm.action.ActivatePaneDirection 'Right',
-	  },
-	  {
-	    key = 'UpArrow',
-	    mods = 'CTRL',
-	    action = wezterm.action.ActivatePaneDirection 'Up',
-	  },
-	  {
-	    key = 'DownArrow',
-	    mods = 'CTRL',
-	    action = wezterm.action.ActivatePaneDirection 'Down',
-	  },
-	  {
-	    key = 'w',
-	    mods = 'CTRL',
-	    action = wezterm.action.CloseCurrentPane { confirm = true },
-	  },
-	}
+	        key = '"',
+	        mods = 'CTRL|SHIFT',
+	        action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
+	      },
+	      {
+	        key = 'LeftArrow',
+	        mods = 'CTRL',
+	        action = wezterm.action.ActivatePaneDirection 'Left',
+	      },
+	      {
+	        key = 'RightArrow',
+	        mods = 'CTRL',
+	        action = wezterm.action.ActivatePaneDirection 'Right',
+	      },
+	      {
+	        key = 'UpArrow',
+	        mods = 'CTRL',
+	        action = wezterm.action.ActivatePaneDirection 'Up',
+	      },
+	      {
+	        key = 'DownArrow',
+	        mods = 'CTRL',
+	        action = wezterm.action.ActivatePaneDirection 'Down',
+	      },
+	      {
+	        key = 'w',
+	        mods = 'CTRL',
+	        action = wezterm.action.CloseCurrentPane { confirm = true },
+	      },
+	    }
 
-	return config
+	    return config
       '';
     };
 
     programs.neovim = {
       enable = true;
       defaultEditor = true;
+      initLua = ''
+        vim.g.mapleader = ' '
+	    vim.g.maplocalleader = ' '
+        
+        vim.opt.number = true
+	    vim.opt.relativenumber = true
+
+	    vim.opt.tabstop = 4
+	    vim.opt.shiftwidth = 4
+	    vim.opt.expandtab = true
+      '';
+      sideloadInitLua = true;
     };
 
     programs.git = {
       enable = true;
       settings = {
         user = {
-	  name = "Dale Morris";
+	      name = "Dale Morris";
           email = "dalemorris2021@gmail.com";
-	};
+	    };
         init.defaultBranch = "main";
       };
     };
+
+    programs.fastfetch = {
+      enable = true;
+    };
+
+    programs.obsidian = {
+      enable = true;
+    };
+
+    nixpkgs.config.allowUnfree = true;
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -190,7 +212,26 @@ in
 
   # System wide packages with config
   programs.firefox.enable = true;
-  programs.zsh.enable = true;
+
+  programs.zsh = {
+    enable = true;
+    syntaxHighlighting = {
+      enable = true;
+      highlighters = [
+        "main"
+        "brackets"
+      ];
+    };
+    enableCompletion = true;
+    autosuggestions.enable = true;
+    ohMyZsh = {
+      enable = true;
+      package = pkgs.oh-my-zsh;
+      plugins = [
+      ];
+      theme = "robbyrussell";
+    };
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -221,6 +262,24 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      default = {
+        ids = [ "*" ];
+        settings = {
+          main = {
+            capslock = "escape";
+	        escape = "capslock";
+          };
+          otherlayer = {};
+        };
+        extraConfig = ''
+        '';
+      };
+    };
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -228,5 +287,5 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "26.05"; # Did you read the comment?
-
 }
+
