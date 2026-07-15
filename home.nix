@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, lib, ...}:
 
 {
   home.username = "ethereal";
@@ -10,6 +10,20 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  home.shell.enableZshIntegration = true;
+
+  home.activation = {
+    disableZshNewuserInstall = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      touch /home/ethereal/.zshrc
+    '';
+  };
+
+  fonts.fontconfig.enable = true;
+
+  home.packages = with pkgs; [
+    nerd-fonts.fira-code
+  ];
+
   programs.wezterm = {
     enable = true;
     enableZshIntegration = true;
@@ -19,11 +33,69 @@
       local config = {}
 
       config.color_scheme = 'Tokyo Night'
-      config.font = wezterm.font('Fira Code')
+      config.font = wezterm.font('FiraCode Nerd Font')
       config.window_background_opacity = 0.7
+
+      config.keys = {
+        {
+          key = "'",
+          mods = 'CTRL',
+          action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }
+        },
+        {
+          key = '"',
+          mods = 'CTRL|SHIFT',
+          action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }
+        },
+        {
+          key = 'LeftArrow',
+          mods = 'CTRL',
+          action = wezterm.action.ActivatePaneDirection 'Left'
+        },
+        {
+          key = 'RightArrow',
+          mods = 'CTRL',
+          action = wezterm.action.ActivatePaneDirection 'Right'
+        },
+        {
+          key = 'UpArrow',
+          mods = 'CTRL',
+          action = wezterm.action.ActivatePaneDirection 'Up'
+        },
+        {
+          key = 'DownArrow',
+          mods = 'CTRL',
+          action = wezterm.action.ActivatePaneDirection 'Down'
+        },
+        {
+          key = 'w',
+          mods = 'CTRL',
+          action = wezterm.action.CloseCurrentPane { confirm = true }
+        },
+      }
 
       return config
     '';
+  };
+
+  programs.zsh = {
+    enable = true;
+    dotDir = "/home/ethereal/.config/zsh";
+    syntaxHighlighting = {
+      enable = true;
+      highlighters = [
+        "main"
+        "brackets"
+      ];
+    };
+    enableCompletion = true;
+    autosuggestion.enable = true;
+    oh-my-zsh = {
+      enable = true;
+      package = pkgs.oh-my-zsh;
+      theme = "robbyrussell";
+    };
+    history.size = 10000;
   };
 
   programs.neovim = {
@@ -55,7 +127,6 @@
     sideloadInitLua = true;
   };
 
-
   programs.git = {
     enable = true;
     settings = {
@@ -70,6 +141,8 @@
   programs.fastfetch = {
     enable = true;
   };
+
+  programs.firefox.enable = true;
 
   programs.obsidian = {
     enable = true;

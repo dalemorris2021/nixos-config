@@ -97,27 +97,7 @@
   };
   
   # System wide packages with config
-  programs.firefox.enable = true;
-
-  programs.zsh = {
-    enable = true;
-    syntaxHighlighting = {
-      enable = true;
-      highlighters = [
-        "main"
-        "brackets"
-      ];
-    };
-    enableCompletion = true;
-    autosuggestions.enable = true;
-    ohMyZsh = {
-      enable = true;
-      package = pkgs.oh-my-zsh;
-      plugins = [
-      ];
-      theme = "robbyrussell";
-    };
-  };
+  programs.zsh.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -125,8 +105,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim
+    nvi
     wget
+    curl
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -147,24 +128,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  services.keyd = {
-    enable = true;
-    keyboards = {
-      default = {
-        ids = [ "*" ];
-        settings = {
-          main = {
-            capslock = "escape";
-	        escape = "capslock";
-          };
-          otherlayer = {};
-        };
-        extraConfig = ''
-        '';
-      };
-    };
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
