@@ -4,14 +4,10 @@
 
 { config, pkgs, lib, ... }:
 
-let
-  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz;
-in
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      (import "${home-manager}/nixos")
     ];
 
   # Bootloader.
@@ -100,116 +96,6 @@ in
     useDefaultShell = false;
   };
   
-  home-manager.users."ethereal" = {pkgs, ...}: {
-    home.packages = with pkgs; [
-      # Simple packages for this user (home manager)
-      kdePackages.kate
-      fira-code
-    ];
-
-    # Packages with config for this user (home manager)
-    programs.wezterm = {
-      enable = true;
-      enableZshIntegration = true;
-      extraConfig = ''
-        local wezterm = require('wezterm')
-
-	    local config = {}
-
-	    config.color_scheme = 'Tokyo Night'
-	    config.font = wezterm.font('Fira Code')
-	    config.window_background_opacity = 0.5
-
-        config.keys = {
-          {
-	        key = "'",
-	        mods = 'CTRL',
-	        action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-	      },
-          {
-	        key = '"',
-	        mods = 'CTRL|SHIFT',
-	        action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-	      },
-	      {
-	        key = 'LeftArrow',
-	        mods = 'CTRL',
-	        action = wezterm.action.ActivatePaneDirection 'Left',
-	      },
-	      {
-	        key = 'RightArrow',
-	        mods = 'CTRL',
-	        action = wezterm.action.ActivatePaneDirection 'Right',
-	      },
-	      {
-	        key = 'UpArrow',
-	        mods = 'CTRL',
-	        action = wezterm.action.ActivatePaneDirection 'Up',
-	      },
-	      {
-	        key = 'DownArrow',
-	        mods = 'CTRL',
-	        action = wezterm.action.ActivatePaneDirection 'Down',
-	      },
-	      {
-	        key = 'w',
-	        mods = 'CTRL',
-	        action = wezterm.action.CloseCurrentPane { confirm = true },
-	      },
-	    }
-
-	    return config
-      '';
-    };
-
-    programs.neovim = {
-      enable = true;
-      defaultEditor = true;
-      initLua = ''
-        vim.g.mapleader = ' '
-	    vim.g.maplocalleader = ' '
-        
-        vim.opt.number = true
-	    vim.opt.relativenumber = true
-
-	    vim.opt.tabstop = 4
-	    vim.opt.shiftwidth = 4
-	    vim.opt.expandtab = true
-      '';
-      sideloadInitLua = true;
-    };
-
-    programs.git = {
-      enable = true;
-      settings = {
-        user = {
-	      name = "Dale Morris";
-          email = "dalemorris2021@gmail.com";
-	    };
-        init.defaultBranch = "main";
-      };
-    };
-
-    programs.fastfetch = {
-      enable = true;
-    };
-
-    programs.obsidian = {
-      enable = true;
-    };
-
-    nixpkgs.config.allowUnfree = true;
-
-    # This value determines the Home Manager release that your configuration is
-    # compatible with. This helps avoid breakage when a new Home Manager release
-    # introduces backwards incompatible changes.
-    #
-    # You should not change this value, even if you update Home Manager. If you do
-    # want to update the value, then make sure to first check the Home Manager
-    # release notes.
-    home.stateVersion = "26.05"; # Please read the comment before changing.
-  };
-
   # System wide packages with config
   programs.firefox.enable = true;
 
